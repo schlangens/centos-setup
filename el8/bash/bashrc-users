@@ -33,5 +33,5 @@ export SYSTEMD_PAGER
 unset SSH_ASKPASS
 
 # LANG
-# LANG=en_US.utf8
+# LANG=en_US.UTF8
 # export LANG
