@@ -1,0 +1,19 @@
+# CentOS-Media.repo
+
+[c8-media-BaseOS]
+enabled=0
+name=CentOS-BaseOS-$releasever - Media
+baseurl=file:///media/CentOS/BaseOS
+        file:///media/cdrom/BaseOS
+        file:///media/cdrecorder/BaseOS
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+
+[c8-media-AppStream]
+enabled=0
+name=CentOS-AppStream-$releasever - Media
+baseurl=file:///media/CentOS/AppStream
+        file:///media/cdrom/AppStream
+        file:///media/cdrecorder/AppStream
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial

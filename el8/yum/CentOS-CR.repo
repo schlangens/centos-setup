@@ -1,0 +1,10 @@
+# CentOS-CR.repo
+
+[cr]
+enabled=1
+priority=1
+name=CentOS-$releasever - cr
+baseurl=http://mirror.centos.org/$contentdir/$releasever/cr/$basearch/os/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+

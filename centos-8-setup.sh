@@ -7,13 +7,16 @@
 # /!\ WORK IN PROGRESS /!\ 
 
 # Enterprise Linux version
-VERSION="el7"
+VERSION="el8"
 
 # Current directory
 CWD=$(pwd)
 
 # Defined users
 USERS="$(ls -A /home)"
+
+# Install these packages
+EXTRA=$(egrep -v '(^\#)|(^\s+$)' ${CWD}/${VERSION}/yum/extra-packages.txt)
 
 # Log
 LOG="/tmp/$(basename "${0}" .sh).log"
@@ -24,6 +27,7 @@ usage() {
   echo 'CentOS 8.x post-install configuration for servers.'
   echo 'Options:'
   echo '  -1, --shell    Configure shell: Bash, Vim, console, etc.'
+  echo '  -3, --extra    Install enhanced base system.'
   echo "Logs are written to ${LOG}."
 }
 
@@ -57,6 +61,22 @@ configure_shell() {
   fi
 }
 
+install_extras() {
+  echo 'Fetching missing packages from Core package group.' 
+  yum -y group mark remove "Core" >> ${LOG} 2>&1
+  yum -y group install "Core" >> ${LOG} 2>&1
+  echo 'Core package group installed on the system.'
+  for PACKAGE in ${EXTRA}
+  do
+    if ! rpm -q ${PACKAGE} > /dev/null 2>&1
+    then
+      echo "Installing package: ${PACKAGE}"
+      yum -y install ${PACKAGE} >> ${LOG} 2>&1
+    fi
+  done
+  echo 'All additional packages installed on the system.'
+}
+
 # Make sure the script is being executed with superuser privileges.
 if [[ "${UID}" -ne 0 ]]
 then
@@ -74,6 +94,9 @@ OPTION="${1}"
 case "${OPTION}" in
   -1|--shell) 
     configure_shell
+    ;;
+  -3|--extra) 
+    install_extras
     ;;
   -h|--help) 
     usage
