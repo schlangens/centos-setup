@@ -26,7 +26,7 @@ EXTRA=$(egrep -v '(^\#)|(^\s+$)' ${CWD}/${VERSION}/yum/extra-packages.txt)
 USERS="$(ls -A /home)"
 
 # Mirrors
-ELREPO="http://mirrors.ircam.fr/pub/elrepo/elrepo/el7/x86_64/RPMS"
+ELREPO="http://mirrors.ircam.fr/pub/elrepo/elrepo/${VERSION}/x86_64/RPMS"
 CISOFY="https://packages.cisofy.com"
 
 # Log
@@ -123,7 +123,7 @@ configure_repos() {
   then
     echo 'Configuring ELRepo package repositories.'
     yum -y localinstall \
-    ${ELREPO}/elrepo-release-7.0-4.el7.elrepo.noarch.rpm >> ${LOG} 2>&1
+    ${ELREPO}/elrepo-release-7.0-4.${VERSION}.elrepo.noarch.rpm >> ${LOG} 2>&1
     cat ${CWD}/${VERSION}/yum/elrepo.repo > /etc/yum.repos.d/elrepo.repo
   fi
   # Enable [lynis] repo with a priority of 5.
