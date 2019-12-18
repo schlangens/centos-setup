@@ -27,6 +27,7 @@ usage() {
   echo 'CentOS 8.x post-install configuration for servers.'
   echo 'Options:'
   echo '  -1, --shell    Configure shell: Bash, Vim, console, etc.'
+  echo '  -2, --repos    Setup official and third-party repositories.'
   echo '  -3, --extra    Install enhanced base system.'
   echo "Logs are written to ${LOG}."
 }
@@ -59,6 +60,40 @@ configure_shell() {
     sed -i -e 's/rhgb quiet/nomodeset quiet vga=791/g' /etc/default/grub
     grub2-mkconfig -o /boot/grub2/grub.cfg >> ${LOG} 2>&1
   fi
+}
+
+configure_repos() {
+  # Enable BaseOS package repository with a priority of 1.  
+  echo 'Configuring BaseOS package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-Base.repo > /etc/yum.repos.d/CentOS-Base.repo
+  sed -i -e 's/installonly_limit=3/installonly_limit=2/g' /etc/yum.conf
+  # Enable AppStream package repository with a priority of 1.  
+  echo 'Configuring AppStream package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-AppStream.repo > /etc/yum.repos.d/CentOS-AppStream.repo
+  # Enable Extras package repository with a priority of 1.  
+  echo 'Configuring Extras package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-Extras.repo > /etc/yum.repos.d/CentOS-Extras.repo
+  # Enable CR package repository with a priority of 1.  
+  echo 'Configuring Continuous Release package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-CR.repo > /etc/yum.repos.d/CentOS-CR.repo
+  # Enable Fasttrack package repository with a priority of 1.  
+  echo 'Configuring Fasttrack package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-fasttrack.repo > /etc/yum.repos.d/CentOS-fasttrack.repo
+  # Enable PowerTools package repository with a priority of 1.  
+  echo 'Configuring PowerTools package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-PowerTools.repo > /etc/yum.repos.d/CentOS-PowerTools.repo
+  # Disable CentOSPlus package repository.
+  echo 'Disabling CentOSPlus package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-centosplus.repo > /etc/yum.repos.d/CentOS-centosplus.repo
+  # Disable DebugInfo package repository.
+  echo 'Disabling DebugInfo package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-Debuginfo.repo > /etc/yum.repos.d/CentOS-Debuginfo.repo
+  # Disable Sources package repository.
+  echo 'Disabling Sources package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-Sources.repo > /etc/yum.repos.d/CentOS-Sources.repo
+  # Disable Media package repository.
+  echo 'Disabling Media package repository.'
+  cat ${CWD}/${VERSION}/yum/CentOS-Media.repo > /etc/yum.repos.d/CentOS-Media.repo
 }
 
 install_extras() {
@@ -94,6 +129,9 @@ OPTION="${1}"
 case "${OPTION}" in
   -1|--shell) 
     configure_shell
+    ;;
+  -2|--repos) 
+    configure_repos
     ;;
   -3|--extra) 
     install_extras
