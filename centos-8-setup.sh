@@ -18,6 +18,9 @@ USERS="$(ls -A /home)"
 # Install these packages
 EXTRA=$(egrep -v '(^\#)|(^\s+$)' ${CWD}/${VERSION}/yum/extra-packages.txt)
 
+# Mirrors
+ELREPO="http://mirrors.ircam.fr/pub/elrepo/elrepo/${VERSION}/x86_64/RPMS"
+
 # Log
 LOG="/tmp/$(basename "${0}" .sh).log"
 echo > ${LOG}
@@ -94,6 +97,27 @@ configure_repos() {
   # Disable Media package repository.
   echo 'Disabling Media package repository.'
   cat ${CWD}/${VERSION}/yum/CentOS-Media.repo > /etc/yum.repos.d/CentOS-Media.repo
+  # Initial update
+  echo 'Performing initial update.'
+  echo 'This might take a moment...'
+  yum -y update >> ${LOG} 2>&1
+  # Enable [epel] repo with a priority of 10.
+  if ! rpm -q epel-release > /dev/null 2>&1
+  then
+    echo 'Configuring EPEL package repositories.' 
+    yum -y install epel-release >> ${LOG} 2>&1
+    cat ${CWD}/${VERSION}/yum/epel.repo > /etc/yum.repos.d/epel.repo
+    cat ${CWD}/${VERSION}/yum/epel-testing.repo > /etc/yum.repos.d/epel-testing.repo
+    cat ${CWD}/${VERSION}/yum/epel-playground.repo > /etc/yum.repos.d/epel-playground.repo
+  fi
+  # Configure [elrepo] and [elrepo-kernel] repos without activating them.
+  if ! rpm -q elrepo-release > /dev/null 2>&1
+  then
+    echo 'Configuring ELRepo package repositories.'
+    yum -y localinstall \
+    ${ELREPO}/elrepo-release-8.0-2.${VERSION}.elrepo.noarch.rpm >> ${LOG} 2>&1
+    cat ${CWD}/${VERSION}/yum/elrepo.repo > /etc/yum.repos.d/elrepo.repo
+  fi
 }
 
 install_extras() {
