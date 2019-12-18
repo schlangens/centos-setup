@@ -20,6 +20,7 @@ EXTRA=$(egrep -v '(^\#)|(^\s+$)' ${CWD}/${VERSION}/yum/extra-packages.txt)
 
 # Mirrors
 ELREPO="http://mirrors.ircam.fr/pub/elrepo/elrepo/${VERSION}/x86_64/RPMS"
+CISOFY="https://packages.cisofy.com"
 
 # Log
 LOG="/tmp/$(basename "${0}" .sh).log"
@@ -86,16 +87,16 @@ configure_repos() {
   echo 'Configuring PowerTools package repository.'
   cat ${CWD}/${VERSION}/yum/CentOS-PowerTools.repo > /etc/yum.repos.d/CentOS-PowerTools.repo
   # Disable CentOSPlus package repository.
-  echo 'Disabling CentOSPlus package repository.'
+  echo 'Configuring CentOSPlus package repository.'
   cat ${CWD}/${VERSION}/yum/CentOS-centosplus.repo > /etc/yum.repos.d/CentOS-centosplus.repo
   # Disable DebugInfo package repository.
-  echo 'Disabling DebugInfo package repository.'
+  echo 'Configuring DebugInfo package repository.'
   cat ${CWD}/${VERSION}/yum/CentOS-Debuginfo.repo > /etc/yum.repos.d/CentOS-Debuginfo.repo
   # Disable Sources package repository.
-  echo 'Disabling Sources package repository.'
+  echo 'Configuring Sources package repository.'
   cat ${CWD}/${VERSION}/yum/CentOS-Sources.repo > /etc/yum.repos.d/CentOS-Sources.repo
   # Disable Media package repository.
-  echo 'Disabling Media package repository.'
+  echo 'Configuring Media package repository.'
   cat ${CWD}/${VERSION}/yum/CentOS-Media.repo > /etc/yum.repos.d/CentOS-Media.repo
   # Initial update
   echo 'Performing initial update.'
@@ -117,6 +118,13 @@ configure_repos() {
     yum -y localinstall \
     ${ELREPO}/elrepo-release-8.0-2.${VERSION}.elrepo.noarch.rpm >> ${LOG} 2>&1
     cat ${CWD}/${VERSION}/yum/elrepo.repo > /etc/yum.repos.d/elrepo.repo
+  fi
+  # Enable [lynis] repo with a priority of 5.
+  if [ ! -f /etc/yum.repos.d/lynis.repo ]
+  then
+    echo 'Configuring Lynis package repository.'
+    rpm --import ${CISOFY}/keys/cisofy-software-rpms-public.key >> ${LOG} 2>&1
+    cat ${CWD}/${VERSION}/yum/lynis.repo > /etc/yum.repos.d/lynis.repo
   fi
 }
 
