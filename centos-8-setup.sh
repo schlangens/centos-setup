@@ -55,6 +55,11 @@ configure_shell() {
   echo 'Configuring Vim.'
   cat ${CWD}/${VERSION}/vim/vimrc > /etc/vimrc
   # Set english as main system language.
+  if ! rpm -q glibc-langpack-en > /dev/null 2>&1
+  then
+    echo 'Installing system locale.'
+    yum -y install glibc-langpack-en >> ${LOG} 2>&1
+  fi
   echo 'Configuring system locale.'
   localectl set-locale LANG=en_US.UTF8
   # Set console resolution
